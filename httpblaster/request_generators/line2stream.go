@@ -42,7 +42,7 @@ func (self *Line2StreamGenerator) generate_request(ch_records chan string,
 
 func (self *Line2StreamGenerator) generate(ch_req chan *fasthttp.Request, payload string, host string) {
 	defer close(ch_req)
-	var ch_records chan string = make(chan string)
+	var ch_records chan string = make(chan string, 100000)
 	wg := sync.WaitGroup{}
 	ch_files := self.FilesScan(self.workload.Payload)
 
@@ -93,7 +93,7 @@ func (self *Line2StreamGenerator) GenerateRequests(wl config.Workload, tls_mode 
 	} else {
 		self.base_uri = fmt.Sprintf("http://%s/%s/%s", host, self.workload.Bucket, self.workload.Target)
 	}
-	ch_req := make(chan *fasthttp.Request, 1000)
+	ch_req := make(chan *fasthttp.Request, 100000)
 
 	go self.generate(ch_req, self.workload.Payload, host)
 

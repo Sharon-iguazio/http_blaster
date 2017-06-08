@@ -45,7 +45,7 @@ func (self *Json2KV) generate_request(ch_records chan []byte, ch_req chan *fasth
 
 func (self *Json2KV) generate(ch_req chan *fasthttp.Request, payload string, host string) {
 	defer close(ch_req)
-	var ch_records chan []byte = make(chan []byte)
+	var ch_records chan []byte = make(chan []byte, 100000)
 
 	wg := sync.WaitGroup{}
 	wg.Add(runtime.NumCPU())
@@ -95,7 +95,7 @@ func (self *Json2KV) GenerateRequests(wl config.Workload, tls_mode bool, host st
 	} else {
 		self.base_uri = fmt.Sprintf("http://%s/%s/%s", host, self.workload.Bucket, self.workload.Target)
 	}
-	ch_req := make(chan *fasthttp.Request, 1000)
+	ch_req := make(chan *fasthttp.Request, 100000)
 
 	go self.generate(ch_req, self.workload.Payload, host)
 
