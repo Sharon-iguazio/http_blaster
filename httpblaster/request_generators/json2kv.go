@@ -57,12 +57,13 @@ func (self *Json2KV) generate(ch_req chan *fasthttp.Request, payload string, hos
 	for f := range ch_files {
 		if file, err := os.Open(f); err == nil {
 			reader := bufio.NewReader(file)
-			var i int = 0
+			var line_count int=0
 			for {
 				line, _, err := reader.ReadLine()
 				if err == nil {
 					ch_records <- line
-					i++
+					line_count++
+					log.Printf("line: %d from file %s was submitted",line_count, f)
 				} else if err == io.EOF {
 					break
 				} else {
@@ -70,7 +71,7 @@ func (self *Json2KV) generate(ch_req chan *fasthttp.Request, payload string, hos
 				}
 			}
 
-			log.Println(fmt.Sprintf("Finish file scaning, generated %d records", i))
+			log.Println(fmt.Sprintf("Finish file scaning, generated %d records", line_count))
 		} else {
 			panic(err)
 		}

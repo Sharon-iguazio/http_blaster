@@ -54,14 +54,14 @@ func (self *Csv2KV) generate(ch_req chan *fasthttp.Request, payload string, host
 	ch_files := self.FilesScan(self.workload.Payload)
 
 	for f := range ch_files {
-		f, err := os.Open(f)
+		fp, err := os.Open(f)
 		if err != nil {
 			panic(err)
 		}
 
-		r := csv.NewReader(f)
+		r := csv.NewReader(fp)
 		r.Comma = self.workload.Separator.Rune
-
+		var line_count int=0
 		for {
 			record, err := r.Read()
 			if err != nil {
@@ -70,14 +70,15 @@ func (self *Csv2KV) generate(ch_req chan *fasthttp.Request, payload string, host
 				}
 				panic(err)
 			}
-
 			if strings.HasPrefix(record[0], "#") {
 				log.Println("Skipping scv header ", strings.Join(record[:], ","))
 			} else {
 				ch_records <- record
+				line_count++
+				log.Printf("line: %d from file %s was submitted",line_count, f)
 			}
 		}
-		f.Close()
+		fp.Close()
 	}
 
 	close(ch_records)
