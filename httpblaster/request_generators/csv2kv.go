@@ -75,7 +75,9 @@ func (self *Csv2KV) generate(ch_req chan *fasthttp.Request, payload string, host
 			} else {
 				ch_records <- record
 				line_count++
-				log.Printf("line: %d from file %s was submitted",line_count, f)
+				if line_count % 500 == 0 {
+					log.Printf("line: %d from file %s was submitted", line_count, f)
+				}
 			}
 		}
 		fp.Close()

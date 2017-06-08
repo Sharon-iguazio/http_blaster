@@ -63,7 +63,9 @@ func (self *Json2KV) generate(ch_req chan *fasthttp.Request, payload string, hos
 				if err == nil {
 					ch_records <- line
 					line_count++
-					log.Printf("line: %d from file %s was submitted",line_count, f)
+					if line_count % 500 == 0{
+						log.Printf("line: %d from file %s was submitted", line_count, f)
+					}
 				} else if err == io.EOF {
 					break
 				} else {
